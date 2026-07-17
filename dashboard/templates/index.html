@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grand Vista Hotel — Reservations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ── Design Tokens ─────────────────────────────────────── */
+    :root {
+      --navy:       #0B0F1A;
+      --navy-mid:   #131929;
+      --slate:      #1E2535;
+      --slate-lt:   #252D42;
+      --gold:       #C9A84C;
+      --gold-lt:    #E2C97A;
+      --gold-dim:   #8A6E2F;
+      --cream:      #F5F0E8;
+      --cream-dim:  #C8C0B0;
+      --pearl:      #8A8FAA;
+      --white:      #FFFFFF;
+      --border:     rgba(201,168,76,0.18);
+      --border-lt:  rgba(201,168,76,0.35);
+      --glass:      rgba(19,25,41,0.85);
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Scrollbar ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+    /* ═══════════════════════════════════════════════════════════
+       HEADER / NAV
+    ═══════════════════════════════════════════════════════════ */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(11,15,26,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-emblem {
+      width: 38px;
+      height: 38px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--gold);
+      font-family: var(--font-display);
+      font-style: italic;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.08em;
+      line-height: 1.1;
+    }
+
+    .logo-tagline {
+      font-size: 9px;
+      color: var(--gold);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    /* Gold shimmer rule — the signature element */
+    .gold-rule {
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--gold-dim) 20%,
+        var(--gold) 50%,
+        var(--gold-dim) 80%,
+        transparent 100%
+      );
+      animation: shimmer 3s ease-in-out infinite;
+      background-size: 200% 100%;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -100% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .stars {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--gold);
+    }
+
+    /* ── Nav tabs ───────────────────────────────────────────── */
+    nav {
+      display: flex;
+      gap: 2px;
+      background: var(--slate);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .nav-btn {
+      padding: 7px 18px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--pearl);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover { color: var(--cream); background: var(--slate-lt); }
+
+    .nav-btn.active {
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       HERO SECTION
+    ═══════════════════════════════════════════════════════════ */
+    .hero {
+      padding-top: 68px;
+      height: 340px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 120%,
+          rgba(201,168,76,0.10) 0%,
+          transparent 70%),
+        radial-gradient(ellipse 60% 80% at 20% -20%,
+          rgba(201,168,76,0.06) 0%,
+          transparent 70%),
+        linear-gradient(180deg, var(--navy-mid) 0%, var(--navy) 100%);
+    }
+
+    /* Subtle animated orb */
+    .hero-orb {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(201,168,76,0.06) 0%,
+        transparent 65%
+      );
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse-orb 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse-orb {
+      0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+      50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 0.7; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim));
+    }
+
+    .hero-eyebrow::after {
+      background: linear-gradient(90deg, var(--gold-dim), transparent);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      margin-bottom: 10px;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--pearl);
+      letter-spacing: 0.06em;
+    }
+
+    .gold-rule-hero {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 16px auto 0;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MAIN LAYOUT
+    ═══════════════════════════════════════════════════════════ */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 32px 60px;
+    }
+
+    /* ── Tab panels ─────────────────────────────────────────── */
+    .tab-panel { display: none; animation: fadeUp 0.35s ease; }
+    .tab-panel.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SECTION LABELS
+    ═══════════════════════════════════════════════════════════ */
+    .section-eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 24px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       ROOM CARDS — "Key Card" aesthetic
+    ═══════════════════════════════════════════════════════════ */
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .room-card {
+      background: var(--slate);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      cursor: default;
+      position: relative;
+    }
+
+    .room-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-lt);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--border-lt);
+    }
+
+    /* Gold accent stripe at top of each card */
+    .room-card-stripe {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .room-card-body { padding: 20px; }
+
+    .room-type-badge {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--border-lt);
+      border-radius: 100px;
+      padding: 3px 10px;
+      margin-bottom: 12px;
+    }
+
+    .room-number {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .room-number span {
+      font-size: 11px;
+      font-family: var(--font-body);
+      font-weight: 400;
+      color: var(--pearl);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      vertical-align: super;
+    }
+
+    .room-amenities {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+
+    .amenity-tag {
+      font-size: 10px;
+      color: var(--pearl);
+      background: rgba(255,255,255,0.04);
+      border-radius: 4px;
+      padding: 2px 7px;
+    }
+
+    .room-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .room-rate-label { font-size: 10px; color: var(--pearl); }
+    .room-rate-value {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--gold);
+    }
+    .room-rate-night { font-size: 10px; color: var(--pearl); }
+
+    .status-pill {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    .sp-vacant   { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
+    .sp-occupied { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.25);  }
+    .sp-oos      { background: rgba(156,163,175,0.1); color: #9ca3af; border: 1px solid rgba(156,163,175,0.2); }
+
+    /* ═══════════════════════════════════════════════════════════
+       BOOKING FORM — Luxury panel
+    ═══════════════════════════════════════════════════════════ */
+    .booking-panel {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) { .booking-panel { grid-template-columns: 1fr; } }
+
+    .glass-card {
+      background: var(--slate);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle gold corner accent */
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle at top right,
+        rgba(201,168,76,0.08) 0%,
+        transparent 65%);
+      pointer-events: none;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 580px) { .form-row { grid-template-columns: 1fr; } }
+
+    .fgroup {
+      margin-bottom: 18px;
+    }
+
+    .fgroup label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--pearl);
+      margin-bottom: 7px;
+    }
+
+    .fgroup input,
+    .fgroup select {
+      width: 100%;
+      background: var(--navy-mid);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 8px;
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+    }
+
+    .fgroup input:focus,
+    .fgroup select:focus {
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+    }
+
+    .fgroup select option { background: var(--slate); }
+
+    /* ── Primary CTA button ─────────────────────────────────── */
+    .btn-gold {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-lt) 50%, var(--gold) 100%);
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      padding: 13px 24px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-position 0.4s ease, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-gold:hover {
+      background-position: 0% 0;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(201,168,76,0.3);
+    }
+
+    .btn-gold:active { transform: translateY(0); }
+
+    /* ── Ghost button ───────────────────────────────────────── */
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-lt);
+      color: var(--cream);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover { background: var(--slate-lt); border-color: var(--gold-dim); }
+
+    .btn-danger-sm {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-danger-sm:hover { background: rgba(239,68,68,0.18); }
+
+    .btn-checkin-sm {
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.25);
+      color: #34d399;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-checkout-sm {
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.25);
+      color: var(--gold);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    /* ── Alerts ─────────────────────────────────────────────── */
+    .alert {
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      margin: 14px 0 0;
+      display: none;
+    }
+
+    .alert-ok  { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: #34d399; }
+    .alert-err { background: rgba(239,68,68,0.08);  border: 1px solid rgba(239,68,68,0.25);  color: #fca5a5; }
+
+    /* ── Available room picker ──────────────────────────────── */
+    .avail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .avail-card {
+      background: var(--navy-mid);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .avail-card:hover,
+    .avail-card.selected {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.06);
+      box-shadow: 0 0 20px rgba(201,168,76,0.12);
+    }
+
+    .avail-room-num {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--cream);
+      line-height: 1;
+    }
+
+    .avail-room-type { font-size: 10px; color: var(--pearl); margin: 4px 0; letter-spacing: 0.1em; text-transform: uppercase; }
+    .avail-room-rate { font-size: 13px; color: var(--gold); font-weight: 600; }
+
+    /* ── Summary / Bill panel ──────────────────────────────── */
+    .bill-panel {
+      background: var(--navy-mid);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .bill-header {
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold-dim) 60%, rgba(201,168,76,0.6));
+      padding: 18px 22px;
+      text-align: center;
+    }
+
+    .bill-hotel-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--navy);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .bill-subtitle { font-size: 9px; color: rgba(11,15,26,0.7); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px; }
+
+    .bill-body { padding: 20px 22px; }
+
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .bill-row-label { color: var(--pearl); }
+    .bill-row-value { color: var(--cream); font-weight: 500; }
+
+    .bill-divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+    .bill-total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0 0;
+    }
+
+    .bill-total-label {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--cream);
+    }
+
+    .bill-total-amount {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      color: var(--gold);
+    }
+
+    .bill-empty {
+      padding: 40px 22px;
+      text-align: center;
+      color: var(--pearl);
+      font-size: 13px;
+    }
+
+    .bill-empty-icon { font-size: 2rem; margin-bottom: 8px; opacity: 0.4; }
+
+    /* ═══════════════════════════════════════════════════════════
+       BOOKINGS TABLE
+    ═══════════════════════════════════════════════════════════ */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: var(--slate);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(201,168,76,0.06);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: rgba(201,168,76,0.03); }
+    tbody tr:last-child { border-bottom: none; }
+
+    td {
+      padding: 14px 16px;
+      color: var(--cream-dim);
+      vertical-align: middle;
+    }
+
+    td.td-primary { color: var(--cream); font-weight: 500; }
+    td.td-mono { font-family: monospace; font-size: 12px; color: var(--gold); }
+    td.td-amount { color: var(--gold); font-weight: 600; }
+
+    .booking-status {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    .bs-RESERVED  { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+    .bs-IN_HOUSE  { background: rgba(52,211,153,0.12); color: #34d399;     border: 1px solid rgba(52,211,153,0.3); }
+    .bs-COMPLETED { background: rgba(156,163,175,0.08);color: #9ca3af;     border: 1px solid rgba(156,163,175,0.2); }
+    .bs-CANCELLED { background: rgba(239,68,68,0.08);  color: #f87171;     border: 1px solid rgba(239,68,68,0.2);  }
+
+    .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ═══════════════════════════════════════════════════════════
+       MANAGE CARDS
+    ═══════════════════════════════════════════════════════════ */
+    .manage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 800px) { .manage-grid { grid-template-columns: 1fr; } }
+
+    .manage-card {
+      background: var(--slate);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .manage-card-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+    }
+
+    .ic-cancel   { background: rgba(239,68,68,0.12);  }
+    .ic-checkin  { background: rgba(52,211,153,0.12); }
+    .ic-checkout { background: rgba(201,168,76,0.12); }
+
+    .manage-card-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+
+    .manage-card-desc {
+      font-size: 12px;
+      color: var(--pearl);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    /* ── Spinner ────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 13px; height: 13px;
+      border: 2px solid rgba(11,15,26,0.3);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Divider with text ──────────────────────────────────── */
+    .text-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--pearl);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .text-divider::before,
+    .text-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ────────────────────────────────────────────────── -->
+<header>
+  <div class="logo">
+    <div class="logo-emblem">G</div>
+    <div class="logo-text">
+      <div class="logo-name">GRAND VISTA</div>
+      <div class="logo-tagline">Luxury Collection</div>
+    </div>
+  </div>
+
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('rooms')">Rooms</button>
+    <button class="nav-btn"        onclick="switchTab('book')">Reserve</button>
+    <button class="nav-btn"        onclick="switchTab('bookings')">Reservations</button>
+    <button class="nav-btn"        onclick="switchTab('manage')">Manage</button>
+  </nav>
+
+  <div class="stars">★ ★ ★ ★ ★</div>
+</header>
+
+<!-- ── Hero ──────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-orb"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Established 1974 &nbsp;·&nbsp; Pune, India</div>
+    <h1 class="hero-title">Where Every Stay Becomes<br><em>a Memory</em></h1>
+    <p class="hero-sub">10 Rooms · 4 Categories · Personalised Service</p>
+    <div class="gold-rule-hero"></div>
+  </div>
+</div>
+<div class="gold-rule"></div>
+
+<!-- ── Main ──────────────────────────────────────────────────── -->
+<main>
+
+  <!-- ══════════════════════ TAB: ROOMS ══════════════════════ -->
+  <div id="tab-rooms" class="tab-panel active">
+    <div class="section-eyebrow">Our Accommodations</div>
+    <h2 class="section-heading">Room Inventory</h2>
+    <div class="rooms-grid" id="room-grid">
+      <div style="color:var(--pearl); grid-column:1/-1; text-align:center; padding:40px;">Loading rooms…</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ TAB: BOOK ═══════════════════════ -->
+  <div id="tab-book" class="tab-panel">
+    <div class="section-eyebrow">Make a Reservation</div>
+    <h2 class="section-heading">Reserve Your Room</h2>
+
+    <div class="booking-panel">
+
+      <!-- Left: search + guest form -->
+      <div>
+        <div class="glass-card">
+          <div class="section-eyebrow" style="margin-bottom:14px;">Step 1 — Select Dates & Type</div>
+          <div class="form-row">
+            <div class="fgroup">
+              <label>Room Category</label>
+              <select id="s-type">
+                <option value="SINGLE">Single — ₹2,000/night</option>
+                <option value="DOUBLE">Double — ₹2,400/night</option>
+                <option value="DELUXE">Deluxe — ₹2,800/night</option>
+                <option value="SUITE">Suite  — ₹3,200/night</option>
+              </select>
+            </div>
+            <div></div>
+            <div class="fgroup">
+              <label>Check-In</label>
+              <input type="date" id="s-checkin"/>
+            </div>
+            <div class="fgroup">
+              <label>Check-Out</label>
+              <input type="date" id="s-checkout"/>
+            </div>
+          </div>
+
+          <button class="btn-gold" onclick="searchRooms()">Search Available Rooms</button>
+          <div class="alert alert-err" id="err-search"></div>
+
+          <!-- Available rooms -->
+          <div id="avail-results"></div>
+        </div>
+
+        <!-- Guest details — shown after room selected -->
+        <div class="glass-card" id="guest-card" style="display:none; margin-top:20px;">
+          <div class="section-eyebrow" style="margin-bottom:14px;">Step 2 — Guest Details</div>
+          <input type="hidden" id="sel-room"/>
+          <div class="form-row">
+            <div class="fgroup">
+              <label>Guest Full Name</label>
+              <input type="text" id="g-name" placeholder="e.g. Priya Sharma"/>
+            </div>
+            <div class="fgroup">
+              <label>Phone Number</label>
+              <input type="text" id="g-phone" placeholder="e.g. 9876543210"/>
+            </div>
+          </div>
+          <button class="btn-gold" onclick="confirmBooking()">Confirm Reservation</button>
+          <div class="alert alert-err" id="err-book"></div>
+          <div class="alert alert-ok" id="ok-book"></div>
+        </div>
+      </div>
+
+      <!-- Right: bill preview -->
+      <div>
+        <div class="bill-panel" id="bill-panel">
+          <div class="bill-header">
+            <div class="bill-hotel-name">Grand Vista Hotel</div>
+            <div class="bill-subtitle">Booking Summary</div>
+          </div>
+          <div class="bill-body" id="bill-body">
+            <div class="bill-empty">
+              <div class="bill-empty-icon">🏨</div>
+              <div>Your booking details<br>will appear here.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════ TAB: BOOKINGS ════════════════════ -->
+  <div id="tab-bookings" class="tab-panel">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+      <div>
+        <div class="section-eyebrow">Guest Records</div>
+        <h2 class="section-heading" style="margin-bottom:0">All Reservations</h2>
+      </div>
+      <button class="btn-ghost" onclick="loadBookings()" style="font-size:11px; padding:8px 16px;">↻ Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Guest</th>
+            <th>Room</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Nights</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookings-body">
+          <tr><td colspan="9" style="text-align:center; color:var(--pearl); padding:32px;">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ TAB: MANAGE ══════════════════════ -->
+  <div id="tab-manage" class="tab-panel">
+    <div class="section-eyebrow">Front Desk Operations</div>
+    <h2 class="section-heading">Manage Reservations</h2>
+
+    <div class="manage-grid">
+
+      <!-- Cancel -->
+      <div class="manage-card">
+        <div class="manage-card-icon ic-cancel">❌</div>
+        <div class="manage-card-title">Cancel Booking</div>
+        <div class="manage-card-desc">Cancel a reserved booking and free the room for new guests.</div>
+        <div class="fgroup">
+          <label>Booking ID</label>
+          <input type="number" id="c-id" placeholder="e.g. 1001"/>
+        </div>
+        <button class="btn-ghost" onclick="doCancel()" style="width:100%; color:#f87171; border-color:rgba(239,68,68,0.3);">Cancel Booking</button>
+        <div class="alert alert-ok"  id="ok-cancel"></div>
+        <div class="alert alert-err" id="err-cancel"></div>
+      </div>
+
+      <!-- Check In -->
+      <div class="manage-card">
+        <div class="manage-card-icon ic-checkin">✅</div>
+        <div class="manage-card-title">Check In Guest</div>
+        <div class="manage-card-desc">Mark a reserved booking as in-house and update room occupancy.</div>
+        <div class="fgroup">
+          <label>Booking ID</label>
+          <input type="number" id="ci-id" placeholder="e.g. 1001"/>
+        </div>
+        <button class="btn-ghost" onclick="doCheckin()" style="width:100%; color:#34d399; border-color:rgba(52,211,153,0.3);">Check In Guest</button>
+        <div class="alert alert-ok"  id="ok-checkin"></div>
+        <div class="alert alert-err" id="err-checkin"></div>
+      </div>
+
+      <!-- Check Out -->
+      <div class="manage-card">
+        <div class="manage-card-icon ic-checkout">🏁</div>
+        <div class="manage-card-title">Check Out & Bill</div>
+        <div class="manage-card-desc">Complete the stay and generate the final bill for the guest.</div>
+        <div class="fgroup">
+          <label>Booking ID</label>
+          <input type="number" id="co-id" placeholder="e.g. 1001"/>
+        </div>
+        <button class="btn-ghost" onclick="doCheckout()" style="width:100%; color:var(--gold); border-color:rgba(201,168,76,0.3);">Check Out & Print Bill</button>
+        <div class="alert alert-ok"  id="ok-checkout"></div>
+        <div class="alert alert-err" id="err-checkout"></div>
+
+        <!-- Bill output for checkout -->
+        <div id="checkout-bill" style="margin-top:14px; display:none; background:var(--navy-mid); border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+          <div class="bill-header" style="padding:12px 18px;">
+            <div class="bill-hotel-name" style="font-size:0.85rem;">Grand Vista Hotel</div>
+            <div class="bill-subtitle">Final Bill</div>
+          </div>
+          <div id="checkout-bill-body" style="padding:14px 18px;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ═════════════════════════════════════════════════════════════
+     JAVASCRIPT
+═════════════════════════════════════════════════════════════ -->
+<script>
+// ── Tab system ────────────────────────────────────────────────
+const TABS = ['rooms','book','bookings','manage'];
+
+function switchTab(name) {
+  TABS.forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === name);
+  });
+  document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', TABS[i] === name);
+  });
+  if (name === 'rooms')    loadRooms();
+  if (name === 'bookings') loadBookings();
+}
+
+// ── Default dates ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const today = new Date(), tm = new Date(today);
+  tm.setDate(today.getDate() + 1);
+  const fmt = d => d.toISOString().slice(0, 10);
+  document.getElementById('s-checkin').value  = fmt(today);
+  document.getElementById('s-checkout').value = fmt(tm);
+  loadRooms();
+});
+
+// ── Room type config ──────────────────────────────────────────
+const RT_CONFIG = {
+  SINGLE: { label:'Single',  icon:'🛏️',    amenities:['Wi-Fi','AC','TV'],           cap:1 },
+  DOUBLE: { label:'Double',  icon:'🛏️🛏️', amenities:['Wi-Fi','AC','TV','Mini-bar'], cap:2 },
+  DELUXE: { label:'Deluxe',  icon:'✨',     amenities:['Wi-Fi','AC','TV','Mini-bar','Bathtub'], cap:2 },
+  SUITE:  { label:'Suite',   icon:'👑',     amenities:['Wi-Fi','AC','TV','Mini-bar','Bathtub','Lounge'], cap:4 },
+};
+
+const STATUS_CLASS = { VACANT:'sp-vacant', OCCUPIED:'sp-occupied', OUT_OF_SERVICE:'sp-oos' };
+
+// ── Load all rooms ────────────────────────────────────────────
+async function loadRooms() {
+  const res   = await fetch('/api/rooms');
+  const rooms = await res.json();
+  const grid  = document.getElementById('room-grid');
+  const rtConfig = RT_CONFIG;
+
+  grid.innerHTML = rooms.map(r => {
+    const cfg = rtConfig[r.type] || {};
+    const amenities = (cfg.amenities || []).map(a =>
+      `<span class="amenity-tag">${a}</span>`
+    ).join('');
+
+    return `
+      <div class="room-card">
+        <div class="room-card-stripe"></div>
+        <div class="room-card-body">
+          <span class="room-type-badge">${cfg.label || r.type}</span>
+          <div class="room-number">
+            ${r.number}<span> Room</span>
+          </div>
+          <div class="room-amenities">${amenities}</div>
+          <div style="font-size:11px; color:var(--pearl)">
+            Max ${r.capacity || cfg.cap || 1} guest${(r.capacity||1) > 1 ? 's' : ''}
+          </div>
+          <div class="room-footer">
+            <div>
+              <div class="room-rate-label">Per night</div>
+              <div class="room-rate-value">₹${(r.nightly_rate||0).toLocaleString('en-IN')}</div>
+            </div>
+            <span class="status-pill ${STATUS_CLASS[r.status] || 'sp-vacant'}">${r.status}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Search available rooms ────────────────────────────────────
+async function searchRooms() {
+  hideAlert('err-search');
+  document.getElementById('avail-results').innerHTML = '';
+  document.getElementById('guest-card').style.display = 'none';
+
+  const body = {
+    room_type: document.getElementById('s-type').value,
+    check_in:  document.getElementById('s-checkin').value,
+    check_out: document.getElementById('s-checkout').value,
+  };
+
+  const res  = await fetch('/api/rooms/available', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+
+  if (data.error) { showAlert('err-search', data.error); return; }
+
+  const nights = daysBetween(body.check_in, body.check_out);
+
+  if (data.count === 0) {
+    document.getElementById('avail-results').innerHTML = `
+      <div class="text-divider">No Availability</div>
+      <div style="text-align:center; padding:16px; color:var(--pearl); font-size:13px;">
+        No rooms available for these dates. Please try different dates or room type.
+      </div>`;
+    return;
+  }
+
+  const cfg = RT_CONFIG[body.room_type] || {};
+  document.getElementById('avail-results').innerHTML = `
+    <div class="text-divider">${data.count} Room${data.count>1?'s':''} Available</div>
+    <div class="avail-grid">
+      ${data.rooms.map(r => `
+        <div class="avail-card" onclick="selectRoom(${r.number}, '${body.check_in}', '${body.check_out}', this)">
+          <div style="font-size:1.4rem; margin-bottom:4px;">${cfg.icon||'🛏️'}</div>
+          <div class="avail-room-num">${r.number}</div>
+          <div class="avail-room-type">${cfg.label} Room</div>
+          <div class="avail-room-rate">₹${(r.nightly_rate||0).toLocaleString('en-IN')}/night</div>
+          <div style="font-size:10px; color:var(--pearl); margin-top:4px;">${nights} nights · Est. ₹${Math.round((r.nightly_rate||0)*nights*1.1).toLocaleString('en-IN')}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ── Select a room ─────────────────────────────────────────────
+function selectRoom(num, checkIn, checkOut, el) {
+  document.querySelectorAll('.avail-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('sel-room').value = num;
+  const card = document.getElementById('guest-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Show preview in bill panel
+  const nights = daysBetween(checkIn, checkOut);
+  const type   = document.getElementById('s-type').value;
+  const rates  = { SINGLE:2000, DOUBLE:2400, DELUXE:2800, SUITE:3200 };
+  const rate   = rates[type] || 2000;
+  const charge = rate * nights;
+  const tax    = Math.round(charge * 0.10);
+  const total  = charge + tax;
+
+  document.getElementById('bill-body').innerHTML = `
+    <div class="bill-row"><span class="bill-row-label">Room</span><span class="bill-row-value">${num}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Check-In</span><span class="bill-row-value">${checkIn}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Check-Out</span><span class="bill-row-value">${checkOut}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Nights</span><span class="bill-row-value">${nights}</span></div>
+    <div class="bill-divider"></div>
+    <div class="bill-row"><span class="bill-row-label">Rate/night</span><span class="bill-row-value">₹${rate.toLocaleString('en-IN')}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Room Charge</span><span class="bill-row-value">₹${charge.toLocaleString('en-IN')}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Tax (10%)</span><span class="bill-row-value">₹${tax.toLocaleString('en-IN')}</span></div>
+    <div class="bill-divider"></div>
+    <div class="bill-total-row">
+      <span class="bill-total-label">Total</span>
+      <span class="bill-total-amount">₹${total.toLocaleString('en-IN')}</span>
+    </div>
+    <div style="text-align:center; margin-top:14px; font-size:10px; color:var(--pearl); letter-spacing:0.1em; text-transform:uppercase;">Estimated — confirm to finalise</div>
+  `;
+}
+
+// ── Confirm booking ───────────────────────────────────────────
+async function confirmBooking() {
+  hideAlert('err-book'); hideAlert('ok-book');
+  const payload = {
+    room_number:  parseInt(document.getElementById('sel-room').value),
+    guest_name:   document.getElementById('g-name').value.trim(),
+    guest_phone:  document.getElementById('g-phone').value.trim(),
+    check_in:     document.getElementById('s-checkin').value,
+    check_out:    document.getElementById('s-checkout').value,
+  };
+
+  const res  = await fetch('/api/bookings', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if (data.error) { showAlert('err-book', data.error); return; }
+
+  const b = data.booking;
+  showAlert('ok-book', `✓ Booking #${b.id} confirmed for ${b.guest_name}`);
+
+  document.getElementById('bill-body').innerHTML = buildBillRows(b) + `
+    <div style="text-align:center; margin-top:14px; font-size:10px; color:#34d399; letter-spacing:0.1em; text-transform:uppercase;">
+      Booking Confirmed — ID #${b.id}
+    </div>
+  `;
+}
+
+// ── Load bookings table ───────────────────────────────────────
+async function loadBookings() {
+  const res   = await fetch('/api/bookings');
+  const list  = await res.json();
+  const tbody = document.getElementById('bookings-body');
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--pearl);padding:36px;">No reservations yet.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(b => `
+    <tr>
+      <td class="td-mono">#${b.id}</td>
+      <td class="td-primary">${b.guest_name}<br><span style="font-size:11px;color:var(--pearl);font-weight:400">${b.guest_phone}</span></td>
+      <td>${b.room_number}<span style="font-size:11px;color:var(--pearl);margin-left:4px">${b.room_type}</span></td>
+      <td>${b.check_in}</td>
+      <td>${b.check_out}</td>
+      <td style="text-align:center">${b.nights}</td>
+      <td class="td-amount">₹${(b.total||0).toLocaleString('en-IN')}</td>
+      <td><span class="booking-status bs-${b.status}">${b.status.replace('_',' ')}</span></td>
+      <td>
+        <div class="action-btns">
+          ${b.status === 'RESERVED'  ? `<button class="btn-danger-sm"   onclick="quickCancel(${b.id})">Cancel</button>` : ''}
+          ${b.status === 'RESERVED'  ? `<button class="btn-checkin-sm"  onclick="quickCheckin(${b.id})">Check In</button>` : ''}
+          ${b.status === 'IN_HOUSE'  ? `<button class="btn-checkout-sm" onclick="quickCheckout(${b.id})">Check Out</button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── Quick actions from table ──────────────────────────────────
+async function quickCancel(id) {
+  const r = await fetch(`/api/bookings/${id}/cancel`, { method:'POST' });
+  const d = await r.json();
+  if (d.error) { alert(d.error); return; }
+  loadBookings(); loadRooms();
+}
+
+async function quickCheckin(id) {
+  const r = await fetch(`/api/bookings/${id}/checkin`, { method:'POST' });
+  const d = await r.json();
+  if (d.error) { alert(d.error); return; }
+  loadBookings(); loadRooms();
+}
+
+async function quickCheckout(id) {
+  const r = await fetch(`/api/bookings/${id}/checkout`, { method:'POST' });
+  const d = await r.json();
+  if (d.error) { alert(d.error); return; }
+  loadBookings(); loadRooms();
+}
+
+// ── Manage tab operations ─────────────────────────────────────
+async function doCancel() {
+  const id = document.getElementById('c-id').value;
+  hideAlert('ok-cancel'); hideAlert('err-cancel');
+  const r = await fetch(`/api/bookings/${id}/cancel`, { method:'POST' });
+  const d = await r.json();
+  if (d.error) { showAlert('err-cancel', d.error); return; }
+  showAlert('ok-cancel', `✓ Booking #${id} cancelled successfully.`);
+  loadRooms();
+}
+
+async function doCheckin() {
+  const id = document.getElementById('ci-id').value;
+  hideAlert('ok-checkin'); hideAlert('err-checkin');
+  const r = await fetch(`/api/bookings/${id}/checkin`, { method:'POST' });
+  const d = await r.json();
+  if (d.error) { showAlert('err-checkin', d.error); return; }
+  showAlert('ok-checkin', `✓ Guest checked in to Room ${d.booking.room_number}.`);
+  loadRooms();
+}
+
+async function doCheckout() {
+  const id = document.getElementById('co-id').value;
+  hideAlert('ok-checkout'); hideAlert('err-checkout');
+  document.getElementById('checkout-bill').style.display = 'none';
+  const r = await fetch(`/api/bookings/${id}/checkout`, { method:'POST' });
+  const d = await r.json();
+  if (d.error) { showAlert('err-checkout', d.error); return; }
+  showAlert('ok-checkout', `✓ Check-out complete. Bill generated.`);
+  document.getElementById('checkout-bill').style.display = 'block';
+  document.getElementById('checkout-bill-body').innerHTML = buildBillRows(d.booking);
+  loadRooms();
+}
+
+// ── Build bill HTML rows ──────────────────────────────────────
+function buildBillRows(b) {
+  return `
+    <div class="bill-row"><span class="bill-row-label">Booking ID</span><span class="bill-row-value">#${b.id}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Guest</span><span class="bill-row-value">${b.guest_name}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Room</span><span class="bill-row-value">${b.room_number} · ${b.room_type}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Check-In</span><span class="bill-row-value">${b.check_in}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Check-Out</span><span class="bill-row-value">${b.check_out}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Nights</span><span class="bill-row-value">${b.nights}</span></div>
+    <div class="bill-divider"></div>
+    <div class="bill-row"><span class="bill-row-label">Rate/night</span><span class="bill-row-value">₹${(b.nightly_rate||0).toLocaleString('en-IN')}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Room Charge</span><span class="bill-row-value">₹${(b.room_charge||0).toLocaleString('en-IN')}</span></div>
+    <div class="bill-row"><span class="bill-row-label">Tax (10%)</span><span class="bill-row-value">₹${(b.tax||0).toLocaleString('en-IN')}</span></div>
+    <div class="bill-divider"></div>
+    <div class="bill-total-row">
+      <span class="bill-total-label">Total</span>
+      <span class="bill-total-amount">₹${(b.total||0).toLocaleString('en-IN')}</span>
+    </div>
+  `;
+}
+
+// ── Utility ───────────────────────────────────────────────────
+function daysBetween(a, b) {
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
+}
+
+function showAlert(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideAlert(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+</script>
+
+</body>
+</html>
