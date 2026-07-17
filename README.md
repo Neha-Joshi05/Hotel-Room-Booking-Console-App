@@ -11,7 +11,7 @@
 
 <br/><br/>
 
-**[🌐 Live Demo](https://hotel-room-booking-app.onrender.com)**
+**[🌐 Live Demo](https://hotel-room-booking-console-app.onrender.com)**
 &nbsp;&nbsp;·&nbsp;&nbsp;
 **[💻 Source Code](https://github.com/Neha-Joshi05/Hotel-Room-Booking-Console-App.git)**
 &nbsp;&nbsp;·&nbsp;&nbsp;
